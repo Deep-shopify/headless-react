@@ -11,3 +11,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.chakra-slider,
+.chakra-slider__track,
+.chakra-slider__thumb,
+.chakra-slider__filled-track {
+  all: unset;
+}
+
+.slick-prev {
+  left: 8px;
+  z-index: 1;
+  height: 30px;
+  width: 30px;
+}
+
+.slick-next {
+  right: 8px;  
+  z-index: 1;
+  height: 30px;
+  width: 30px;
+}
+
+.slick-prev:before, .slick-next:before {
+  font-size: 30px;
+}

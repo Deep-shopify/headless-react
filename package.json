@@ -3,18 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/slider": "^2.1.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.2",
     "framer-motion": "^11.3.19",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
     "react-scripts": "5.0.1",
+    "react-slick": "^0.30.2",
     "shopify-buy": "^2.22.0",
+    "slick-carousel": "^1.8.1",
     "vercel": "^35.2.1",
     "web-vitals": "^2.1.4"
   },
@@ -41,5 +46,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.3"
   }
 }
