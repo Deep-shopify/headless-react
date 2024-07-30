@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'; // Updated import
-import App from './App';
+// import App from './App';
 import Client from 'shopify-buy';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home'; 
-import ImageSlider from './components/homeslider';
+// import ProductSlider from './components/Featured_collection';
 import ProductList from './components/ProductList';
 import ProductPage from './components/ProductPage';
 import CollectionsPage from './components/CollectionsPage';
-import { Box, Flex, Text, Image } from '@chakra-ui/react';
+// import { Box, Flex, Text, Image } from '@chakra-ui/react';
 import { ChakraProvider } from '@chakra-ui/react';
 import Header from './components/Header';
 // In your main file (e.g., App.js or index.js)
@@ -30,7 +30,7 @@ root.render(
   <Router>
      <Header />
       <Routes>
-      <Route path="/" element={<Home client={client} />} />
+      <Route path="/" element={<Home client={client}  />} /> 
         <Route path="/collections" element={<CollectionsPage client={client} />} />
         <Route path="/collections/:handle" element={<ProductList client={client} />} />
         <Route path="/product/:id" element={<ProductPage client={client} />} /> {/* Pass client to ProductPage */}

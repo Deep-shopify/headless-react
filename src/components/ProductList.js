@@ -10,7 +10,7 @@ const ProductList = ({ client }) => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000); // Set a default max price
   const ITEMS_PER_LOAD = 6; // Number of items to load each time
-
+  console.log(collection);
   useEffect(() => {
     const fetchCollection = async () => {
       try {

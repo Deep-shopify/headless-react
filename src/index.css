@@ -35,4 +35,15 @@ code {
 
 .slick-prev:before, .slick-next:before {
   font-size: 30px;
+  color: #000000;
 }
+
+.product-info {
+  text-align: center;
+}
+
+.product-slider .slick-slide img {
+  max-height: 345px;
+}
+
+

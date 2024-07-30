@@ -3,11 +3,12 @@ import React from 'react';
 import ImageSlider from './homeslider'; // Import the ImageSlider component
 import ProductSlider from './Featured_collection';
 
-const Home = () => {
+
+const Home = ({ client }) => {
   return (
     <div>
       <ImageSlider />
-      <ProductSlider collectionHandle="hydrogen" />
+      <ProductSlider client={client} handle="automated-collection" />
     </div>
   );
 };
