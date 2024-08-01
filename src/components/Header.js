@@ -1,16 +1,18 @@
-// Header.js
-import React, { useEffect, useState } from 'react';
-import { Box, Flex, Heading, Link, Spacer, Button, useDisclosure, Collapse, Popover, PopoverTrigger, PopoverContent, PopoverBody, Portal } from '@chakra-ui/react';
-import { HamburgerIcon, ChevronDownIcon } from '@chakra-ui/icons';
-import { useNavigate } from 'react-router-dom';
-import Client1 from 'shopify-buy';
+// src/components/Header.js
 
-const client = Client1.buildClient({
+import React, { useEffect, useState } from 'react';
+import { Box, Flex, Heading, Link, Spacer, Button, useDisclosure, Collapse, Popover, PopoverTrigger, PopoverContent, PopoverBody, Portal, IconButton } from '@chakra-ui/react';
+import { HamburgerIcon, ChevronDownIcon } from '@chakra-ui/icons'; // Import AddIcon for cart
+import { useNavigate } from 'react-router-dom';
+import Client from 'shopify-buy';
+import { FaShoppingCart } from 'react-icons/fa';
+
+const client = Client.buildClient({
   domain: 'react-demo-store-2024.myshopify.com',
   storefrontAccessToken: '1b1f74c659da24e743c82345740c47f2', 
 });
 
-const Header = () => {
+const Header = ({ cartItems, onOpenCart }) => {
   const { isOpen, onToggle } = useDisclosure();
   const { onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
@@ -74,9 +76,9 @@ const Header = () => {
           </Box>
         </Collapse>
         <Box display={{ base: 'none', md: 'flex' }} ml={10}>
-        <Link p={4}  onClick={() => navigate('/')}> 
-         Home
-         </Link>
+          <Link p={4} onClick={() => navigate('/')}> 
+            Home
+          </Link>
           <Popover placement="bottom-start" onOpen={onOpen} onClose={onClose}>
             <PopoverTrigger>
               <Link p={4}>
@@ -96,6 +98,14 @@ const Header = () => {
             </Portal>
           </Popover>
         </Box>
+        {/* Cart Icon Button */}
+        <IconButton
+          icon={<FaShoppingCart  />}
+          aria-label="Open Cart"
+          colorScheme="whiteAlpha"
+          onClick={onOpenCart} // Call the function to open the cart drawer
+          ml={4}
+        />
       </Flex>
     </Box>
   );

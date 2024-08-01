@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ProductList from './components/ProductList';
+import ProductList from './components/ProductList.1';
 import ProductPage from './components/ProductPage'; // Import the ProductPage component
 import Client from 'shopify-buy'; // Import Shopify Buy SDK
 

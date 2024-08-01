@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Text, Image, Center, Spinner, Button, useToast, Wrap } from '@chakra-ui/react';
+import { Box, Text, Image, Center, Spinner, Button, useToast, Wrap, Flex } from '@chakra-ui/react';
+import CartDrawer from '../components/Cart-drawer'; // Import the CartDrawer component
 
-const ProductPage = ({ client }) => {
+const ProductPage = ({ client, cartItems, addToCart, removeFromCart, updateQuantity, onCheckout }) => {
   const { id } = useParams(); // Get the numeric product ID from the URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [checkoutId, setCheckoutId] = useState(null);
   const [selectedVariantId, setSelectedVariantId] = useState(null); // State for selected variant
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to control the cart drawer
   const toast = useToast(); // Chakra UI toast for notifications
 
   useEffect(() => {
-    // Construct the global ID format
     const globalId = `gid://shopify/Product/${id}`; // Use the numeric ID to create the global ID
 
     console.log('Fetching product with ID:', globalId); // Log the global ID
@@ -28,18 +28,9 @@ const ProductPage = ({ client }) => {
         console.error('Error fetching product:', error);
         setLoading(false);
       });
-
-    // Create a new checkout
-    client.checkout.create()
-      .then((checkout) => {
-        setCheckoutId(checkout.id);
-      })
-      .catch((error) => {
-        console.error('Error creating checkout:', error);
-      });
   }, [id, client]);
 
-  const addToCart = () => {
+  const handleAddToCart = () => {
     if (!selectedVariantId) {
       toast({
         title: "Error",
@@ -51,29 +42,26 @@ const ProductPage = ({ client }) => {
       return;
     }
 
-    client.checkout.addLineItems(checkoutId, [{ variantId: selectedVariantId, quantity: 1 }])
-      .then((checkout) => {
-        console.log('Added to cart:', checkout);
-        toast({
-          title: "Added to Cart",
-          description: `${product.title} has been added to your cart.`,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        // Redirect to checkout
-        window.location.href = checkout.webUrl; // Redirect to the checkout URL
-      })
-      .catch((error) => {
-        console.error('Error adding to cart:', error);
-        toast({
-          title: "Error",
-          description: "There was an error adding the item to your cart.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      });
+    const itemToAdd = {
+      id: selectedVariantId,
+      title: product.title,
+      price: parseFloat(product.variants.find(v => v.id === selectedVariantId).price.amount),
+    };
+
+    addToCart(itemToAdd); // Use the addToCart function from props
+
+    toast({
+      title: "Added to Cart",
+      description: `${product.title} has been added to your cart.`,
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+ 
+    // setTimeout(() => {
+    //   setIsDrawerOpen(true); 
+    // }, 4000);
+
   };
 
   const handleVariantChange = (variantId) => {
@@ -94,8 +82,11 @@ const ProductPage = ({ client }) => {
 
   return (
     <Center>
-      <Box maxW="600px" w="full" p={4}>
+      <Flex maxW="1366px" w="full" p={4}>
+      <Box width="50%">
         <Image src={product.images[0]?.src} alt={product.title} maxW="600px" />
+        </Box>
+        <Box width="50%">
         <Text fontWeight="bold" fontSize="2xl" mt={4}>{product.title}</Text>
         
         {/* Variant Selector as Buttons */}
@@ -106,25 +97,29 @@ const ProductPage = ({ client }) => {
               onClick={() => handleVariantChange(variant.id)}
               colorScheme={selectedVariantId === variant.id ? 'teal' : 'gray'}
               variant={selectedVariantId === variant.id ? 'solid' : 'outline'}
-              className={selectedVariantId === variant.id ? 'selected' : ''} // Add selected class
-              style={{
-                border: selectedVariantId === variant.id ? '2px solid #000' : '2px solid transparent',
-                backgroundColor: selectedVariantId === variant.id ? '#000' : 'grey',
-                color: selectedVariantId === variant.id ? '#fff' : '#fff',
-              }}
             >
-              {variant.title} - ${variant.price.amount}
+              {variant.title} - ₹{variant.price.amount}
             </Button>
           ))}
         </Wrap>
         
-        <Text fontSize="xl" mt={2}>Selected Price: ${product.variants.find(v => v.id === selectedVariantId)?.price.amount || '0.00'}</Text>
+        <Text fontSize="xl" mt={2}>Selected Price: ₹{product.variants.find(v => v.id === selectedVariantId)?.price.amount || '0.00'}</Text>
         <Text mt={4}>{product.description}</Text>
         
-        <Button mt={4} colorScheme="teal" onClick={addToCart}>
+        <Button mt={4} colorScheme="teal" onClick={handleAddToCart}>
           Add to Cart
         </Button>
       </Box>
+        {/* Cart Drawer */}
+        <CartDrawer 
+          cartItems={cartItems} 
+          onRemoveFromCart={removeFromCart} 
+          isOpen={isDrawerOpen} 
+          onClose={() => setIsDrawerOpen(false)} 
+          onCheckout={onCheckout} // Pass the checkout handler
+          updateQuantity={updateQuantity} // Pass the updateQuantity function
+        />
+      </Flex>
     </Center>
   );
 };
