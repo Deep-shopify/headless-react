@@ -12,6 +12,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import Header from './components/Header';
 import CartDrawer from './components/Cart-drawer'; // Import the CartDrawer component
 import './index.css';
+import OtpLogin from './components/OtpLogin';
 
 // Initialize Shopify client
 const client = Client.buildClient({
@@ -117,6 +118,7 @@ const addToCart = (item) => {
               />
             }
           />
+            <Route path="/otplogin" element={<OtpLogin client={client} />} />
         </Routes>
       </Router>
     </ChakraProvider>
