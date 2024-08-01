@@ -50,6 +50,20 @@ const addToCart = (item) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
   };
 
+  const updateQuantity = (itemId, change) => {
+    setCartItems((prevItems) => {
+      const itemIndex = prevItems.findIndex(item => item.id === itemId);
+      if (itemIndex >= 0) {
+        const updatedItem = { ...prevItems[itemIndex], quantity: prevItems[itemIndex].quantity + change };
+        if (updatedItem.quantity <= 0) {
+          return prevItems.filter(item => item.id !== itemId); // Remove item if quantity is 0
+        }
+        return [...prevItems.slice(0, itemIndex), updatedItem, ...prevItems.slice(itemIndex + 1)];
+      }
+      return prevItems;
+    });
+  };
+
   const handleCheckout = () => {
     const lineItems = cartItems.map(item => ({
       variantId: item.id,
@@ -82,6 +96,7 @@ const addToCart = (item) => {
         <CartDrawer 
           cartItems={cartItems} 
           onRemoveFromCart={removeFromCart} 
+          onupdateQuantity={updateQuantity} 
           isOpen={isDrawerOpen} 
           onClose={onCloseCart} 
           onCheckout={handleCheckout} 
@@ -89,7 +104,7 @@ const addToCart = (item) => {
         <Routes>
           <Route path="/" element={<Home client={client} />} />
           <Route path="/collections" element={<CollectionsPage client={client} />} />
-          <Route path="/collections/:handle" element={<ProductList client={client}  cartItems={cartItems} addToCart={addToCart}   removeFromCart={removeFromCart} />} />
+          <Route path="/collections/:handle" element={<ProductList client={client}  cartItems={cartItems} addToCart={addToCart}   removeFromCart={removeFromCart} updateQuantity={updateQuantity} />} />
           <Route
             path="/product/:id"
             element={

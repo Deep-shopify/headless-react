@@ -16,15 +16,15 @@ import {
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons'; // Use DeleteIcon for remove action
 
-const CartDrawer = ({ cartItems, onRemoveFromCart, isOpen, onClose, onCheckout, updateQuantity }) => {
-  const getTotalPrice = () => {
+const CartDrawer = ({ cartItems, onRemoveFromCart, isOpen, onClose, onCheckout, onupdateQuantity }) => {
+  const getTotalPrice = () => { 
     return cartItems.reduce((total, item) => {
       return total + item.price * item.quantity; // Use item.quantity for total calculation
     }, 0);
   };
 
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={onClose} w="100%">
+    <Drawer isOpen={isOpen} placement="right" onClose={onClose}  size="md">
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
@@ -44,14 +44,14 @@ const CartDrawer = ({ cartItems, onRemoveFromCart, isOpen, onClose, onCheckout, 
                   <IconButton
                     aria-label="Decrease quantity"
                     icon={<Button>-</Button>}
-                    onClick={() => updateQuantity(item.id, -1)}
+                    onClick={() => onupdateQuantity(item.id, -1)}
                     isDisabled={item.quantity <= 1} // Disable if quantity is 1
                   />
                   <Text mx={2}>{item.quantity}</Text>
                   <IconButton
                     aria-label="Increase quantity"
                     icon={<Button>+</Button>}
-                    onClick={() => updateQuantity(item.id, 1)}
+                    onClick={() => onupdateQuantity(item.id, 1)}
                   />
                 </Flex>
                 <IconButton
