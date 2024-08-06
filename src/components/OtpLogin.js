@@ -4,12 +4,13 @@ import { getAuth, signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth
 
 // Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCTwQEEdxkLzhL0H8tuWR_PoTxcQMegq_s",
+  authDomain: "shopify-otp-retail-mart.firebaseapp.com",
+  projectId: "shopify-otp-retail-mart",
+  storageBucket: "shopify-otp-retail-mart.appspot.com",
+  messagingSenderId: "433295715028",
+  appId: "1:433295715028:web:5a4afb7182b2d237d16941",
+  measurementId: "G-49YP56ZYN8"
 };
 
 // Initialize Firebase
@@ -26,14 +27,22 @@ const OTPLogin = () => {
     setPhoneNumber(event.target.value);
   };
 
-  const handleOtpChange = (event) => {
+  const handleOtpChange = (event) => {  
     setOtp(event.target.value);
-  };
+  }; 
 
   const sendOtp = async () => {
     // Ensure the recaptcha container is present
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {}, auth);
+      window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', auth, {
+        size: 'invisible', // or 'normal'
+        callback: (response) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        },
+        'expired-callback': () => {
+          // Response expired. Ask user to solve reCAPTCHA again.
+        }
+      });
     }
 
     try {
