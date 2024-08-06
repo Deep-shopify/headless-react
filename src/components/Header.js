@@ -97,6 +97,9 @@ const Header = ({ cartItems, onOpenCart }) => {
               </PopoverContent>
             </Portal>
           </Popover>
+          <Link p={4} onClick={() => navigate('/otplogin')}> 
+            OTP Login
+          </Link>
         </Box>
         {/* Cart Icon Button */}
         <IconButton

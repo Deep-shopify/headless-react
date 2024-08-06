@@ -1,73 +1,90 @@
-// src/OtpLogin.js
 import React, { useState } from 'react';
-import axios from 'axios';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
 
-const OtpLogin = () => {
-  const [phoneNumber, setPhoneNumber] = useState(''); 
+// Your Firebase configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const OTPLogin = () => {
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [error, setError] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handlePhoneNumberChange = (event) => {
+    setPhoneNumber(event.target.value);
+  };
+
+  const handleOtpChange = (event) => {
+    setOtp(event.target.value);
+  };
 
   const sendOtp = async () => {
+    // Ensure the recaptcha container is present
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {}, auth);
+    }
+
     try {
-      const response = await axios.post('http://localhost:5000/send-otp', {
-        phoneNumber,
-      });
-      if (response.data.success) {
-        setGeneratedOtp(response.data.otp); // Store the generated OTP for verification
-        setIsOtpSent(true);
-        setError('');
-      }
-    } catch (err) {
-      setError('Failed to send OTP. Please try again.');
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+      setConfirmationResult(confirmationResult);
+      setErrorMessage('');
+    } catch (error) {
+      setErrorMessage(error.message);
     }
   };
 
   const verifyOtp = async () => {
-    if (otp === generatedOtp) {
-      // Here you can handle the login with Shopify
-      alert('OTP verified successfully! Logging you in...');
-      
-      // Example: Redirect to Shopify or perform any action
-      // You might want to call your Shopify API here to log in the user
-    } else {
-      setError('Invalid OTP. Please try again.');
+    try {
+      await confirmationResult.confirm(otp);
+      alert('OTP verified successfully!');
+    } catch (error) {
+      setErrorMessage(error.message);
     }
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
-      <h2>Login with OTP</h2>
-      <input
-        type="text"
-        placeholder="Phone Number"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-        style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
-      />
-      <button onClick={sendOtp} style={{ width: '100%', padding: '10px', marginBottom: '10px' }}>
-        Send OTP
-      </button>
+    <div>
+      <h2>OTP Login</h2>
+      <div>
+        <input
+          type="text"
+          placeholder="Enter your phone number"
+          value={phoneNumber}
+          onChange={handlePhoneNumberChange}
+        />
+        <button onClick={sendOtp}>Get OTP</button>
+      </div>
 
-      {isOtpSent && (
-        <>
+      {confirmationResult && (
+        <div>
           <input
             type="text"
+            maxLength={6}
             placeholder="Enter OTP"
             value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+            onChange={handleOtpChange}
           />
-          <button onClick={verifyOtp} style={{ width: '100%', padding: '10px' }}>
-            Verify OTP
-          </button>
-        </>
+          <button onClick={verifyOtp}>Verify OTP</button>
+        </div>
       )}
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+      <div id="recaptcha-container"></div>
     </div>
   );
 };
 
-export default OtpLogin;
+export default OTPLogin;

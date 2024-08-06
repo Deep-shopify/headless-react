@@ -38,6 +38,7 @@ const ProductList = ({ client, addToCart  }) => {
         setMaxPrice_static(maxPrice_static);  
 
         // Set the initial filtered products
+        console.log(fetchedCollection.products);
         setFilteredProducts(fetchedCollection.products);
       } catch (error) {
         console.error('Error fetching collection:', error);
@@ -90,6 +91,7 @@ const ProductList = ({ client, addToCart  }) => {
       const price = parseFloat(product.variants[0]?.price?.amount);
       return price >= min && price <= max;
     });
+    console.log(filtered);
     setFilteredProducts(filtered);
     setDisplayedProducts(filtered.slice(0, ITEMS_PER_LOAD)); // Reset displayed products with filtered ones
   };
@@ -102,82 +104,78 @@ const ProductList = ({ client, addToCart  }) => {
 
   const handleTagClick = (tag) => {
     const newSelectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter(t => t !== tag) // Remove tag if already selected
-      : [...selectedTags, tag]; // Add tag if not selected
+        ? selectedTags.filter(t => t !== tag) // Remove tag if already selected
+        : [...selectedTags, tag]; // Add tag if not selected
 
     setSelectedTags(newSelectedTags);
 
-    // Filter products based on selected tags
-    
-
     const fetchTags_collection = async () => {
-      try {
-        const response = await axios.post('https://react-demo-store-2024.myshopify.com/api/2024-01/graphql.json', {
-          query: `
-            query {
-              collection(handle: "${handle}") {
-                title
-                products(first: 100) {
-                  edges {
-                    node {
-                      id
-                      title
-                      tags
-                      variants(first: 1) {
-                        edges {
-                          node {
-                            price {
-                              amount
+        try {
+            const response = await axios.post('https://react-demo-store-2024.myshopify.com/api/2024-01/graphql.json', {
+                query: `
+                    query {
+                        collection(handle: "${handle}") {
+                            title
+                            products(first: 100) {
+                                edges {
+                                    node {
+                                        id
+                                        title
+                                        tags
+                                        variants(first: 1) {
+                                            edges {
+                                                node {
+                                                    price { amount }
+                                                }
+                                            }
+                                        }
+                                        images(first: 1) {
+                                            edges {
+                                                node { src }
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                          }
                         }
-                      }
-                      images(first: 1) {
-                        edges {
-                          node {
-                            src
-                          }
-                        }
-                      }
                     }
-                  }
+                `
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Storefront-Access-Token': '1b1f74c659da24e743c82345740c47f2',
                 }
-              }
+            });
+
+            const allProducts = response.data.data.collection.products.edges;
+
+            // If no tags are selected, show all products
+            if (newSelectedTags.length === 0) {
+                setFilteredProducts(allProducts);
+                setDisplayedProducts(allProducts.slice(0, ITEMS_PER_LOAD));
+                return; // Exit the function early
             }
-          `
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Shopify-Storefront-Access-Token': '1b1f74c659da24e743c82345740c47f2',
-          }
-        });
 
-        const allTags = response.data.data.collection.products.edges.flatMap(edge => edge.node.tags);
-        const uniqueTags = [...new Set(allTags)]; // Get unique tags
-        setTags(uniqueTags);
-        console.log('unique Tages collection found: ');
-        console.log(uniqueTags);
+            const allTags = response.data.data.collection.products.edges.flatMap(edge => edge.node.tags || []); // Use default empty array
+            const uniqueTags = [...new Set(allTags)];
+            setTags(uniqueTags);
 
-        const filtered = response.data.data.collection.products.edges.filter(edge => {
-          console.log('collection products: ');
-          const product1 = edge.node;
-          console.log(product1.tags); 
-          // Ensure product.tags exists and is an array before calling .some();
-          const hasTag = product1.tags && Array.isArray(product1.tags) && product1.tags.some(t => newSelectedTags.includes(t));
-          return hasTag;
-        });
-    
-        setFilteredProducts(filtered);
-        setDisplayedProducts(filtered.slice(0, ITEMS_PER_LOAD)); // Reset displayed products with filtered ones
-    
-
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-      }
+            const filtered = response.data.data.collection.products.edges.filter(edge => {
+                const product1 = edge.node;
+                console.log('Product Tags:', product1.tags); // Log tags for debugging
+                const hasTag = Array.isArray(product1.tags) && product1.tags.some(t => newSelectedTags.includes(t));
+                return hasTag;
+            });
+          console.log(filtered);
+            setFilteredProducts(filtered);
+            setDisplayedProducts(filtered.slice(0, ITEMS_PER_LOAD));
+        } catch (error) {
+            console.error('Error fetching tags:', error);
+        }
     };
-    fetchTags_collection();
 
-  };
+    fetchTags_collection();
+};
 
   if (loading) {
     return (
@@ -227,7 +225,7 @@ const ProductList = ({ client, addToCart  }) => {
                   size="md"
                   variant={selectedTags.includes(tag) ? "solid" : "outline"}
                   colorScheme={selectedTags.includes(tag) ? "teal" : "gray"}
-                  onClick={() => handleTagClick(tag)}
+                   onClick={() => handleTagClick(tag)}
                   cursor="pointer"
                   mr={2}
                   mb={2}
@@ -266,10 +264,14 @@ const ProductList = ({ client, addToCart  }) => {
           <Box bg="white" p={4} color="#000">
             <Grid templateColumns="repeat(3, 1fr)" gap={6}>
               {displayedProducts.map((product) => (
+                // <Box key={product.id} borderWidth="1px" borderRadius="lg" overflow="hidden">
+                // <h2 className="product-title">{product.title}</h2>
+                // </Box>
                 <Box key={product.id} borderWidth="1px" borderRadius="lg" overflow="hidden">
                  
                     <Center>
-                    <Link to={`/product/${product.id.split('/').pop()}`}> <Image
+                    <Link to={`/product/${product.id.split('/').pop()}`}>
+                     <Image
                         src={product.images[0]?.src}
                         alt={product.title}
                         boxSize="200px"
