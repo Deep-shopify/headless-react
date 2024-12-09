@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "9bf9a39abb86041d58b98c8004624e1e"
-application_url = "https://bio-hawaiian-girls-seller.trycloudflare.com"
+application_url = "https://headless-react-git-app-deep-shopifys-projects.vercel.app"
 embedded = true
 name = "demo-react-app"
 handle = "demo-react-app-6"
@@ -19,9 +19,9 @@ scopes = "write_products,read_customers,read_products,read_discounts,write_disco
 
 [auth]
 redirect_urls = [
-  "https://bio-hawaiian-girls-seller.trycloudflare.com/auth/callback",
-  "https://bio-hawaiian-girls-seller.trycloudflare.com/auth/shopify/callback",
-  "https://bio-hawaiian-girls-seller.trycloudflare.com/api/auth/callback"
+  "https://headless-react-git-app-deep-shopifys-projects.vercel.app/auth/callback",
+  "https://headless-react-git-app-deep-shopifys-projects.vercel.app/auth/shopify/callback",
+  "https://headless-react-git-app-deep-shopifys-projects.vercel.app/api/auth/callback"
 ]
 
 [pos]
